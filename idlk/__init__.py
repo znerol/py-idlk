@@ -28,7 +28,7 @@ def idlk(filename):
         macroman_name = filename.encode("macroman")
     except UnicodeEncodeError:
         pass
-    finally:
+    else:
         hashed = base41.encode(hash_macroman(macroman_name))
         base, ext = os.path.splitext(macroman_name)
         return "~{:s}~{:s}.idlk".format(base[0:18].decode("macroman"), hashed)
