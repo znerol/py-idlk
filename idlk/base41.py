@@ -1,18 +1,22 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 BASE41 = "0123456789abcdefghijklmnopqrstuvwxyz-_()$"
 
 def encode(x):
     res = BASE41[x % 41]
-    x /= 41
+    x //= 41
     res = BASE41[x % 41] + res
-    x /= 41
+    x //= 41
     res = BASE41[x % 41] + res
-    x /= 41
+    x //= 41
     res = BASE41[x % 41] + res
-    x /= 41
+    x //= 41
     res = BASE41[x % 41] + res
-    x /= 41
+    x //= 41
     res = BASE41[x] + res
-    x /= 41
+    x //= 41
     assert(x == 0)
 
     return res
