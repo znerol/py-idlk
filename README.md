@@ -1,5 +1,7 @@
 # Python idlk
 
+[![Build Status](https://travis-ci.org/znerol/py-idlk.svg?branch=master)](https://travis-ci.org/znerol/py-idlk)
+
 This is a proof-of-concept implementation of a lock filename generator for idlk
 files used by a well known desktop publishing suite.
 
