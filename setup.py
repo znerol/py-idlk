@@ -7,5 +7,6 @@ setup(
     author='Lorenz Schori',
     author_email='lo@znerol.ch',
     packages=['idlk'],
+    test_suite="idlk.test",
     zip_safe=True
 )
