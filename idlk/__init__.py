@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import os
 import sys
+import unicodedata
 import idlk.base41
 
 if sys.version_info[0] == 3:
@@ -19,6 +20,9 @@ def hash_macroman(data):
     return h % 0xFFFEECED
 
 def idlk(filename):
+    # Normalize to NFC.
+    filename = unicodedata.normalize('NFC', filename)
+
     # Convert to lowercase first.
     filename = filename.lower()
 
