@@ -1,40 +1,61 @@
+"""
+Custom Base41 implementation as used for generating idlk file names.
+"""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
 BASE41 = "0123456789abcdefghijklmnopqrstuvwxyz-_()$"
+BASE41_DEC = [
+    {char: idx * 41 * 41 * 41 * 41 * 41 for idx, char in enumerate(BASE41)},
+    {char: idx * 41 * 41 * 41 * 41 for idx, char in enumerate(BASE41)},
+    {char: idx * 41 * 41 * 41 for idx, char in enumerate(BASE41)},
+    {char: idx * 41 * 41 for idx, char in enumerate(BASE41)},
+    {char: idx * 41 for idx, char in enumerate(BASE41)},
+    {char: idx for idx, char in enumerate(BASE41)}
+]
 
-def encode(x):
-    res = BASE41[x % 41]
-    x //= 41
-    res = BASE41[x % 41] + res
-    x //= 41
-    res = BASE41[x % 41] + res
-    x //= 41
-    res = BASE41[x % 41] + res
-    x //= 41
-    res = BASE41[x % 41] + res
-    x //= 41
-    res = BASE41[x] + res
-    x //= 41
-    assert(x == 0)
+class EncodeError(ValueError):
+    """
+    Raised whenever encoding fails.
+    """
+    pass
 
-    return res
+class DecodeError(ValueError):
+    """
+    Raised whenever decoding fails.
+    """
+    pass
 
-def decode(s):
-    b1, b2, b3, b4, b5, b6 = s
-    p1 = BASE41.find(b1) * 41 * 41 * 41 * 41 * 41
-    assert(p1 >= 0)
-    p2 = BASE41.find(b2) * 41 * 41 * 41 * 41
-    assert(p2 >= 0)
-    p3 = BASE41.find(b3) * 41 * 41 * 41
-    assert(p3 >= 0)
-    p4 = BASE41.find(b4) * 41 * 41
-    assert(p4 >= 0)
-    p5 = BASE41.find(b5) * 41
-    assert(p5 >= 0)
-    p6 = BASE41.find(b6)
-    assert(p6 >= 0)
+def encode(value):
+    """
+    Encodes an integer value and returns a six-character string.
+    """
+    if value < 0 or value > 41**6-1:
+        raise EncodeError('Value out of range')
 
-    return p1 + p2 + p3 + p4 + p5 + p6
+    result = BASE41[value % 41]
+    value //= 41
+    result = BASE41[value % 41] + result
+    value //= 41
+    result = BASE41[value % 41] + result
+    value //= 41
+    result = BASE41[value % 41] + result
+    value //= 41
+    result = BASE41[value % 41] + result
+    value //= 41
+    result = BASE41[value] + result
 
+    return result
+
+def decode(data):
+    """
+    Decodes a six-character encoded value into an integer.
+    """
+    if len(data) != 6:
+        raise DecodeError('Parameter must be a six-character string')
+    try:
+        return sum((BASE41_DEC[row][char] for row, char in enumerate(data, 0)))
+    except (KeyError, IndexError):
+        raise DecodeError('Data out of range')
