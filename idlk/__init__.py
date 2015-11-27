@@ -15,6 +15,12 @@ if sys.version_info[0] == 3:
 else:
     _get_byte = ord
 
+class IdlkError(ValueError):
+    """
+    Raised whenever filename generation fails.
+    """
+    pass
+
 def hash_macroman(data):
     """
     Compute the hash for the given byte string.
@@ -41,13 +47,12 @@ def idlk(filename):
     try:
         macroman_name = filename.encode("macroman")
     except UnicodeEncodeError:
-        pass
+        # Regrettably the encoding / hashing algorithm for unicode filenames is
+        # not currently known. Please file a feature request/patch if you
+        # discover a working implementation.
+        raise IdlkError("File names with characters outside the Mac OS Roman "
+                        "encoding are not supported")
     else:
         hashed = base41.encode(hash_macroman(macroman_name))
         base = os.path.splitext(macroman_name)[0]
         return "~{:s}~{:s}.idlk".format(base[0:18].decode("macroman"), hashed)
-
-    # Regrettably the encoding / hashing algorithm for unicode filenames is
-    # not currently known. Please file a feature request/patch if you
-    # discover a working implementation.
-    return False
