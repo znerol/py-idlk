@@ -1,3 +1,6 @@
+"""
+A lock filename generator for idlk files used by a well known DTP suite.
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
@@ -5,7 +8,7 @@ from __future__ import unicode_literals
 import os
 import sys
 import unicodedata
-import idlk.base41
+from idlk import base41
 
 if sys.version_info[0] == 3:
     _get_byte = lambda c: c
@@ -13,13 +16,20 @@ else:
     _get_byte = ord
 
 def hash_macroman(data):
-    h = 0
-    for c in data:
-        h = ((h << 8) + h) + _get_byte(c)
+    """
+    Compute the hash for the given byte string.
+    """
+    result = 0
+    for char in data:
+        result = ((result << 8) + result) + _get_byte(char)
 
-    return h % 0xFFFEECED
+    return result % 0xFFFEECED
 
 def idlk(filename):
+    """
+    Generate the lock file name for the given file.
+    """
+
     # Normalize to NFC.
     filename = unicodedata.normalize('NFC', filename)
 
@@ -34,7 +44,7 @@ def idlk(filename):
         pass
     else:
         hashed = base41.encode(hash_macroman(macroman_name))
-        base, ext = os.path.splitext(macroman_name)
+        base = os.path.splitext(macroman_name)[0]
         return "~{:s}~{:s}.idlk".format(base[0:18].decode("macroman"), hashed)
 
     # Regrettably the encoding / hashing algorithm for unicode filenames is
